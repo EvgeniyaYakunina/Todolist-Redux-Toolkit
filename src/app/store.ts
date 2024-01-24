@@ -5,6 +5,7 @@ import thunkMiddleware, { ThunkAction, ThunkDispatch } from "redux-thunk"
 import { appReducer } from "./app-reducer"
 import { authReducer } from "features/Login/auth-reducer"
 import { configureStore } from "@reduxjs/toolkit"
+import { TypedUseSelectorHook, useSelector } from "react-redux"
 
 // объединяя reducer-ы с помощью combineReducers,
 // мы задаём структуру нашего единственного объекта-состояния
@@ -26,6 +27,8 @@ export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, AppRootStateTy
 
 // export type AppDispatch = typeof store.dispatch
 export type AppDispatch = ThunkDispatch<AppRootStateType, unknown, AnyAction>
+
+export const useAppSelector: TypedUseSelectorHook<AppRootStateType> = useSelector
 
 // а это, чтобы можно было в консоли браузера обращаться к store в любой момент
 // @ts-ignore
