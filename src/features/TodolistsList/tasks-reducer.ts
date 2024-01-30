@@ -1,10 +1,13 @@
 import { TaskPriorities, TaskStatuses, TaskType, todolistsAPI, UpdateTaskModelType } from "api/todolists-api"
-import { AppThunk } from "app/store"
+import { AppDispatch, AppRootStateType, AppThunk } from "app/store"
 import { handleServerAppError, handleServerNetworkError } from "utils/error-utils"
 import { appActions } from "app/app-reducer"
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { todolistsActions } from "features/TodolistsList/todolists-reducer"
 import { clearTasksAndTodolists } from "common/actions/common.actions"
+import { Simulate } from "react-dom/test-utils"
+import error = Simulate.error
+import { createAppAsyncThunk } from "utils/createAppAsyncThunk"
 
 // const initialState: TasksStateType = {}
 
@@ -100,19 +103,27 @@ const slice = createSlice({
 //   ({ type: "SET-TASKS", tasks, todolistId }) as const
 
 // thunks
-const fetchTasks = createAsyncThunk("tasks/fetchTasks", async (todolistId: string, thunkAPI) => {
-  // dispatch(setAppStatusAC("loading"))
-  const { dispatch } = thunkAPI
-  dispatch(appActions.setAppStatus({ status: "loading" }))
+const fetchTasks = createAppAsyncThunk<{ tasks: TaskType[]; todolistId: string }, string>(
+  "tasks/fetchTasks",
+  async (todolistId, thunkAPI) => {
+    // dispatch(setAppStatusAC("loading"))
+    const { dispatch, rejectWithValue } = thunkAPI
+    try {
+      dispatch(appActions.setAppStatus({ status: "loading" }))
 
-  const res = await todolistsAPI.getTasks(todolistId)
-  // const tasks = res.data.items
+      const res = await todolistsAPI.getTasks(todolistId)
+      // const tasks = res.data.items
 
-  // dispatch(setAppStatusAC("succeeded"))
-  dispatch(appActions.setAppStatus({ status: "succeeded" }))
-  // dispatch(tasksActions.setTasks({ tasks: res.data.items, todolistId }))
-  return { tasks: res.data.items, todolistId }
-})
+      // dispatch(setAppStatusAC("succeeded"))
+      dispatch(appActions.setAppStatus({ status: "succeeded" }))
+      // dispatch(tasksActions.setTasks({ tasks: res.data.items, todolistId }))
+      return { tasks: res.data.items, todolistId }
+    } catch (error) {
+      handleServerNetworkError(error, dispatch)
+      return rejectWithValue(null)
+    }
+  },
+)
 
 // export const _fetchTasksTC =
 //   (todolistId: string): AppThunk =>
