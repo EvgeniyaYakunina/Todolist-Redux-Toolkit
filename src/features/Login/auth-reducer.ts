@@ -1,13 +1,11 @@
-import { authAPI, LoginParamsType } from "api/todolists-api"
-import { handleServerAppError, handleServerNetworkError } from "utils/error-utils"
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { AppThunk } from "app/store"
 import { appActions } from "app/app-reducer"
 import { clearTasksAndTodolists } from "common/actions/common.actions"
+import { handleServerAppError, handleServerNetworkError } from "common/utils"
+import { authAPI, LoginParamsType } from "features/Login/auth-api"
 
-// const initialState: InitialStateType = {
-//   isLoggedIn: false,
-// }
+// const initialState: InitialStateType = {isLoggedIn: false}
 
 const slice = createSlice({
   name: "auth",
@@ -79,11 +77,7 @@ export const logoutTC = (): AppThunk => (dispatch) => {
 // types
 
 // type ActionsType = ReturnType<typeof setIsLoggedInAC>
-
-// type InitialStateType = {
-//   isLoggedIn: boolean
-// }
-
+// type InitialStateType = {isLoggedIn: boolean}
 // type ThunkDispatch = Dispatch<ActionsType | SetAppStatusActionType | SetAppErrorActionType>
 
 export const authReducer = slice.reducer

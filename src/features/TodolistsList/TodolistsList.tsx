@@ -1,23 +1,21 @@
 import React, { useCallback, useEffect } from "react"
-import { useSelector } from "react-redux"
-import { AppRootStateType, useAppSelector } from "app/store"
+import { useAppSelector } from "app/store"
 import {
   addTodolistTC,
   changeTodolistTitleTC,
   fetchTodolistsTC,
   FilterValuesType,
   removeTodolistTC,
-  TodolistDomainType,
   todolistsActions,
 } from "./todolists-reducer"
-import { removeTaskTC, TasksStateType, tasksThunks } from "./tasks-reducer"
-import { TaskStatuses } from "api/todolists-api"
+import { removeTaskTC, tasksThunks } from "./tasks-reducer"
 import { Grid, Paper } from "@mui/material"
-import { AddItemForm } from "components/AddItemForm/AddItemForm"
 import { Todolist } from "./Todolist/Todolist"
 import { Navigate } from "react-router-dom"
-import { useAppDispatch } from "hooks/useAppDispatch"
+import { useAppDispatch } from "common/hooks/useAppDispatch"
 import { selectIsLoggedIn, selectTasks, selectTodolists } from "features/TodolistsList/todolistList-selectors"
+import { AddItemForm } from "common/components"
+import { TaskStatuses } from "common/enum/enum"
 
 type PropsType = {
   demo?: boolean
