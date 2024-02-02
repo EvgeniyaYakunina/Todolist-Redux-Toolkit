@@ -1,5 +1,5 @@
-import { tasksActions, tasksReducer, TasksStateType, tasksThunks } from "./tasks-reducer"
-import { todolistsActions, todolistsThunks } from "./todolists-reducer"
+import { tasksReducer, TasksStateType, tasksThunks } from "./tasks-reducer"
+import { todolistsThunks } from "./todolists-reducer"
 import { TaskPriorities, TaskStatuses } from "common/enum/enum"
 
 let startState: TasksStateType = {}
@@ -149,15 +149,20 @@ test("title of specified task should be changed", () => {
   expect(endState["todolistId2"][1].title).toBe("yogurt")
   expect(endState["todolistId2"][0].title).toBe("bread")
 })
+
 test("new array should be added when new todolist is added", () => {
-  const action = todolistsActions.addTodolist({
-    todolist: {
-      id: "blabla",
-      title: "new todolist",
-      order: 0,
-      addedDate: "",
+  const action = todolistsThunks.addTodolist.fulfilled(
+    {
+      todolist: {
+        id: "blabla",
+        title: "new todolist",
+        order: 0,
+        addedDate: "",
+      },
     },
-  })
+    "requestId",
+    { title: "new todolist" },
+  )
 
   const endState = tasksReducer(startState, action)
 
@@ -180,7 +185,6 @@ test("propertry with todolistId should be deleted", () => {
   expect(keys.length).toBe(1)
   expect(endState["todolistId2"]).not.toBeDefined()
 })
-
 test("empty arrays should be added when we set todolists", () => {
   const action = todolistsThunks.fetchTodolists.fulfilled(
     {
