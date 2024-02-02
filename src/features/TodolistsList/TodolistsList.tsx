@@ -3,10 +3,10 @@ import { useAppSelector } from "app/store"
 import {
   addTodolistTC,
   changeTodolistTitleTC,
-  fetchTodolistsTC,
   FilterValuesType,
   removeTodolistTC,
   todolistsActions,
+  todolistsThunks,
 } from "./todolists-reducer"
 import { tasksThunks } from "./tasks-reducer"
 import { Grid, Paper } from "@mui/material"
@@ -33,8 +33,9 @@ export const TodolistsList: React.FC<PropsType> = ({ demo = false }) => {
     if (demo || !isLoggedIn) {
       return
     }
-    const thunk = fetchTodolistsTC()
-    dispatch(thunk)
+    // const thunk = fetchTodolistsTC()
+    // dispatch(thunk)
+    dispatch(todolistsThunks.fetchTodolists())
   }, [])
 
   const removeTask = useCallback(function (taskId: string, todolistId: string) {

@@ -2,7 +2,7 @@ import { appActions, RequestStatusType } from "app/app-reducer"
 import { AppThunk } from "app/store"
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { clearTasksAndTodolists } from "common/actions/common.actions"
-import { handleServerNetworkError } from "common/utils"
+import { createAppAsyncThunk, handleServerNetworkError } from "common/utils"
 import { todolistsAPI, TodolistType } from "features/TodolistsList/Todolist/todolists-api"
 
 // const initialState: Array<TodolistDomainType> = []
@@ -46,41 +46,47 @@ const slice = createSlice({
         todolist.entityStatus = action.payload.entityStatus
       }
     },
-    setTodolists: (state, action: PayloadAction<{ todolists: TodolistType[] }>) => {
-      //  1вариант
-      //   return action.payload.todolists.map((tl) => ({ ...tl, filter: "all", entityStatus: "idle" }))
-      // 2вариант
-      action.payload.todolists.forEach((tl) => {
-        state.push({ ...tl, filter: "all", entityStatus: "idle" })
-      })
-    },
+    // setTodolists: (state, action: PayloadAction<{ todolists: TodolistType[] }>) => {
+    //   //  1вариант
+    //   //   return action.payload.todolists.map((tl) => ({ ...tl, filter: "all", entityStatus: "idle" }))
+    //   // 2вариант
+    //   action.payload.todolists.forEach((tl) => {
+    //     state.push({ ...tl, filter: "all", entityStatus: "idle" })
+    //   })
+    // },
   },
   extraReducers: (builder) => {
-    builder.addCase(clearTasksAndTodolists.type, () => {
-      return []
-    })
+    builder
+      .addCase(fetchTodolists.fulfilled, (state, action) => {
+        action.payload.todolists.forEach((tl) => {
+          state.push({ ...tl, filter: "all", entityStatus: "idle" })
+        })
+      })
+      .addCase(clearTasksAndTodolists.type, () => {
+        return []
+      })
   },
 })
 
-// thunks
-export const fetchTodolistsTC = (): AppThunk => {
-  return (dispatch) => {
-    // dispatch(setAppStatusAC("loading"))
-    dispatch(appActions.setAppStatus({ status: "loading" }))
+const fetchTodolists = createAppAsyncThunk<{ todolists: TodolistType[] }>(
+  "todolists/fetchTodolists",
+  async (todolist, thunkAPI) => {
+    const { dispatch, rejectWithValue } = thunkAPI
+    try {
+      dispatch(appActions.setAppStatus({ status: "loading" }))
+      const res = await todolistsAPI.getTodolists()
+      // dispatch(setAppStatusAC("succeeded"))
+      dispatch(appActions.setAppStatus({ status: "succeeded" }))
+      // dispatch(setTodolistsAC(res.data))
+      // dispatch(todolistsActions.setTodolists({ todolists: res.data }))
+      return { todolists: res.data }
+    } catch (error) {
+      handleServerNetworkError(error, dispatch)
+      return rejectWithValue(null)
+    }
+  },
+)
 
-    todolistsAPI
-      .getTodolists()
-      .then((res) => {
-        // dispatch(setTodolistsAC(res.data))
-        dispatch(todolistsActions.setTodolists({ todolists: res.data }))
-        // dispatch(setAppStatusAC("succeeded"))
-        dispatch(appActions.setAppStatus({ status: "succeeded" }))
-      })
-      .catch((error) => {
-        handleServerNetworkError(error, dispatch)
-      })
-  }
-}
 export const removeTodolistTC = (todolistId: string): AppThunk => {
   return (dispatch) => {
     //изменим глобальный статус приложения, чтобы вверху полоса побежала
@@ -130,6 +136,7 @@ export type TodolistDomainType = TodolistType & {
 
 export const todolistsReducer = slice.reducer
 export const todolistsActions = slice.actions
+export const todolistsThunks = { fetchTodolists }
 
 // export const _todolistsReducer = (
 //   state: Array<TodolistDomainType> = initialState,
@@ -175,6 +182,26 @@ export const todolistsActions = slice.actions
 //     id,
 //     status,
 //   }) as const
+
+// thunks
+// export const _fetchTodolistsTC = (): AppThunk => {
+//   return (dispatch) => {
+//     // dispatch(setAppStatusAC("loading"))
+//     dispatch(appActions.setAppStatus({ status: "loading" }))
+//
+//     todolistsAPI
+//       .getTodolists()
+//       .then((res) => {
+//         // dispatch(setTodolistsAC(res.data))
+//         dispatch(todolistsActions.setTodolists({ todolists: res.data }))
+//         // dispatch(setAppStatusAC("succeeded"))
+//         dispatch(appActions.setAppStatus({ status: "succeeded" }))
+//       })
+//       .catch((error) => {
+//         handleServerNetworkError(error, dispatch)
+//       })
+//   }
+// }
 
 // types
 // export type AddTodolistActionType = ReturnType<typeof addTodolistAC>
