@@ -1,11 +1,19 @@
 import React from "react"
-import { useFormik } from "formik"
+import { FormikHelpers, useFormik } from "formik"
 import { useAppSelector } from "app/store"
 import { Navigate } from "react-router-dom"
 import { useAppDispatch } from "common/hooks/useAppDispatch"
 import { Button, Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel, Grid, TextField } from "@mui/material"
 import { selectIsLoggedIn } from "features/Login/auth-selectors"
 import { authThunks } from "features/Login/auth-reducer"
+import { BaseResponseType } from "common/types"
+import { LoginParamsType } from "features/Login/auth-api"
+
+type FormValues = {
+  email: string
+  password: string
+  rememberMe: boolean
+}
 
 export const Login = () => {
   const dispatch = useAppDispatch()
@@ -14,24 +22,37 @@ export const Login = () => {
 
   const formik = useFormik({
     validate: (values) => {
-      if (!values.email) {
-        return {
-          email: "Email is required",
-        }
-      }
-      if (!values.password) {
-        return {
-          password: "Password is required",
-        }
-      }
+      // if (!values.email) {
+      //   return {
+      //     email: "Email is required",
+      //   }
+      // }
+      // if (!values.password) {
+      //   return {
+      //     password: "Password is required",
+      //   }
+      // }
     },
     initialValues: {
       email: "",
       password: "",
       rememberMe: false,
     },
-    onSubmit: (values) => {
+    onSubmit: (values, formikHelpers: FormikHelpers<FormValues>) => {
       dispatch(authThunks.login(values))
+        // обработка ошибок
+        // т.к. thunk в createAsyncThunk всегда возвр.
+        // зарезолвленный промис,использ unwrap, кот. выявляет resolved
+        // или rejected промис и дает возможность попасть в catch
+        .unwrap()
+        // .then((res) => {
+        //   debugger
+        // })
+        .catch((err: BaseResponseType) => {
+          err.fieldsErrors.forEach((fieldError) => {
+            formikHelpers.setFieldError(fieldError.field, fieldError.error)
+          })
+        })
     },
   })
 
@@ -57,9 +78,9 @@ export const Login = () => {
             </FormLabel>
             <FormGroup>
               <TextField label="Email" margin="normal" {...formik.getFieldProps("email")} />
-              {formik.errors.email ? <div>{formik.errors.email}</div> : null}
+              {formik.errors.email ? <div style={{ color: "red" }}>{formik.errors.email}</div> : null}
               <TextField type="password" label="Password" margin="normal" {...formik.getFieldProps("password")} />
-              {formik.errors.password ? <div>{formik.errors.password}</div> : null}
+              {formik.errors.password ? <div style={{ color: "red" }}>{formik.errors.password}</div> : null}
               <FormControlLabel
                 label={"Remember me"}
                 control={<Checkbox {...formik.getFieldProps("rememberMe")} checked={formik.values.rememberMe} />}
