@@ -1,7 +1,4 @@
-import { Dispatch } from "redux"
-import { authActions } from "features/Login/auth-reducer"
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { authAPI } from "features/Login/auth-api"
 
 // const initialState: InitialStateType = {
 //   status: "idle",
@@ -29,6 +26,12 @@ const slice = createSlice({
   },
 })
 
+export const appReducer = slice.reducer
+export const appActions = slice.actions
+
+export type RequestStatusType = "idle" | "loading" | "succeeded" | "failed"
+export type InitialStateType = ReturnType<typeof slice.getInitialState>
+
 // export const appReducer = (state: InitialStateType = initialState, action: ActionsType): InitialStateType => {
 //   switch (action.type) {
 //     // case "APP/SET-STATUS":
@@ -46,17 +49,18 @@ const slice = createSlice({
 // export const setAppStatusAC = (status: RequestStatusType) => ({ type: "APP/SET-STATUS", status }) as const
 // export const setAppInitializedAC = (value: boolean) => ({ type: "APP/SET-IS-INITIALIED", value }) as const
 
-export const initializeAppTC = () => (dispatch: Dispatch) => {
-  authAPI.me().then((res) => {
-    if (res.data.resultCode === 0) {
-      // dispatch(setIsLoggedInAC(true))
-      dispatch(authActions.setIsLoggedIn({ isLoggedIn: true }))
-    } else {
-    }
-    // dispatch(setAppInitializedAC(true))
-    dispatch(appActions.setAppInitialized({ isInitialized: true }))
-  })
-}
+// thunks
+// export const _initializeAppTC = () => (dispatch: Dispatch) => {
+//   authAPI.me().then((res) => {
+//     if (res.data.resultCode === 0) {
+//       // dispatch(setIsLoggedInAC(true))
+//       dispatch(authActions.setIsLoggedIn({ isLoggedIn: true }))
+//     } else {
+//     }
+//     // dispatch(setAppInitializedAC(true))
+//     dispatch(appActions.setAppInitialized({ isInitialized: true }))
+//   })
+// }
 
 // types
 
@@ -73,10 +77,3 @@ export const initializeAppTC = () => (dispatch: Dispatch) => {
 // }
 
 // type ActionsType = SetAppErrorActionType | SetAppStatusActionType | ReturnType<typeof setAppInitializedAC>
-
-export const appReducer = slice.reducer
-export const appActions = slice.actions
-
-export type RequestStatusType = "idle" | "loading" | "succeeded" | "failed"
-
-export type InitialStateType = ReturnType<typeof slice.getInitialState>
