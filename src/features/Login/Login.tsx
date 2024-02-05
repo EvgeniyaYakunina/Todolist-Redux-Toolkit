@@ -49,7 +49,8 @@ export const Login = () => {
         //   debugger
         // })
         .catch((err: BaseResponseType) => {
-          err.fieldsErrors.forEach((fieldError) => {
+          //проверка на наличие d err 'fieldError'
+          err.fieldsErrors?.forEach((fieldError) => {
             formikHelpers.setFieldError(fieldError.field, fieldError.error)
           })
         })
