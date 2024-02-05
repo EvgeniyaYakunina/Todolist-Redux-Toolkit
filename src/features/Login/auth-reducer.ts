@@ -4,6 +4,7 @@ import { clearTasksAndTodolists } from "common/actions/common.actions"
 import { createAppAsyncThunk, handleServerAppError, handleServerNetworkError } from "common/utils"
 import { authAPI, LoginParamsType } from "features/Login/auth-api"
 import { ResultCode } from "features/TodolistsList/tasks-reducer"
+import { thunkTryCatch } from "common/utils/thunkTryCatch"
 
 // const initialState: InitialStateType = {isLoggedIn: false}
 
@@ -39,7 +40,7 @@ const login = createAppAsyncThunk<{ isLoggedIn: boolean }, LoginParamsType>("aut
       // в конкретном поле в компоненте
       // Если у нас fieldsErrors нету значит отобразим ошибку глобально
       const isShowAppError = !res.data.fieldsErrors.length
-      handleServerAppError(res.data, dispatch, false)
+      handleServerAppError(res.data, dispatch, isShowAppError)
       return rejectWithValue(res.data)
     }
   } catch (e) {
@@ -71,21 +72,38 @@ const initializeApp = createAppAsyncThunk<{ isLoggedIn: boolean }, undefined>(
   `${slice.name}/initializeApp`,
   async (_, thunkAPI) => {
     const { dispatch, rejectWithValue } = thunkAPI
-    try {
+    return thunkTryCatch(thunkAPI, async () => {
       const res = await authAPI.me()
       if (res.data.resultCode === ResultCode.success) {
         return { isLoggedIn: true }
       } else {
         return rejectWithValue(null)
       }
-    } catch (e) {
-      handleServerNetworkError(e, dispatch)
-      return rejectWithValue(null)
-    } finally {
+    }).finally(() => {
       dispatch(appActions.setAppInitialized({ isInitialized: true }))
-    }
+    })
   },
 )
+
+// const initializeApp = createAppAsyncThunk<{ isLoggedIn: boolean }, undefined>(
+//   `${slice.name}/initializeApp`,
+//   async (_, thunkAPI) => {
+//     const { dispatch, rejectWithValue } = thunkAPI
+//     try {
+//       const res = await authAPI.me()
+//       if (res.data.resultCode === ResultCode.success) {
+//         return { isLoggedIn: true }
+//       } else {
+//         return rejectWithValue(null)
+//       }
+//     } catch (e) {
+//       handleServerNetworkError(e, dispatch)
+//       return rejectWithValue(null)
+//     } finally {
+//       dispatch(appActions.setAppInitialized({ isInitialized: true }))
+//     }
+//   },
+// )
 
 export const authReducer = slice.reducer
 export const authThunks = { login, logout, initializeApp }
