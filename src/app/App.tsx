@@ -19,6 +19,7 @@ import { useAppSelector } from "app/store"
 import { selectIsInitialized, selectIsLoggedIn, selectStatus } from "app/app-selectors"
 import { ErrorSnackbar } from "common/components"
 import { authThunks } from "features/Login/auth-reducer"
+import { useActions } from "common/hooks"
 
 type PropsType = {
   demo?: boolean
@@ -30,12 +31,16 @@ function App({ demo = false }: PropsType) {
   const isLoggedIn = useAppSelector(selectIsLoggedIn)
   const dispatch = useDispatch<any>()
 
+  const { initializeApp, logout } = useActions(authThunks)
+
   useEffect(() => {
-    dispatch(authThunks.initializeApp())
+    // dispatch(authThunks.initializeApp())
+    initializeApp()
   }, [])
 
   const logoutHandler = useCallback(() => {
-    dispatch(authThunks.logout())
+    // dispatch(authThunks.logout())
+    logout()
   }, [])
 
   if (!isInitialized) {
