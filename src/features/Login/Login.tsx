@@ -7,38 +7,47 @@ import { Button, Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel, 
 import { selectIsLoggedIn } from "features/Login/auth-selectors"
 import { authThunks } from "features/Login/auth-reducer"
 import { BaseResponseType } from "common/types"
-import { LoginParamsType } from "features/Login/auth-api"
 
-type FormValues = {
+export type LoginParamsType = {
   email: string
   password: string
   rememberMe: boolean
+  captcha?: string
 }
+
+// type FormValues = {
+//   email: string
+//   password: string
+//   rememberMe: boolean
+// }
+
+type FormikErrorType = Partial<Omit<LoginParamsType, "captcha">>
 
 export const Login = () => {
   const dispatch = useAppDispatch()
-
   const isLoggedIn = useAppSelector(selectIsLoggedIn)
 
   const formik = useFormik({
     validate: (values) => {
-      // if (!values.email) {
-      //   return {
-      //     email: "Email is required",
-      //   }
-      // }
-      // if (!values.password) {
-      //   return {
-      //     password: "Password is required",
-      //   }
-      // }
+      const errors: FormikErrorType = {}
+      if (!values.email) {
+        errors.email = "Email is required"
+      } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
+        errors.email = "Invalid email address"
+      }
+      if (!values.password) {
+        errors.password = "Required"
+      } else if (values.password.length < 3) {
+        errors.password = "Must be 3 characters or more"
+      }
+      return errors
     },
     initialValues: {
       email: "",
       password: "",
       rememberMe: false,
     },
-    onSubmit: (values, formikHelpers: FormikHelpers<FormValues>) => {
+    onSubmit: (values, formikHelpers: FormikHelpers<LoginParamsType>) => {
       dispatch(authThunks.login(values))
         // обработка ошибок
         // т.к. thunk в createAsyncThunk всегда возвр.
