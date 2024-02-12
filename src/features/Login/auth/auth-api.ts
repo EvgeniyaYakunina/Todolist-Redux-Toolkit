@@ -1,6 +1,6 @@
 import { instance } from "common/api"
 import { BaseResponseType } from "common/types/types"
-import { LoginParamsType } from "features/Login/Login"
+import { LoginParamsType } from "features/Login/auth/auth-types"
 
 export const authAPI = {
   login(data: LoginParamsType) {

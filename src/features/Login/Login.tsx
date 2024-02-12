@@ -7,64 +7,10 @@ import { Button, Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel, 
 import { selectIsLoggedIn } from "features/Login/auth-selectors"
 import { authThunks } from "features/Login/auth-reducer"
 import { BaseResponseType } from "common/types"
-
-export type LoginParamsType = {
-  email: string
-  password: string
-  rememberMe: boolean
-  captcha?: string
-}
-
-// type FormValues = {
-//   email: string
-//   password: string
-//   rememberMe: boolean
-// }
-
-type FormikErrorType = Partial<Omit<LoginParamsType, "captcha">>
+import { useLogin } from "features/Login/lib/useLogin"
 
 export const Login = () => {
-  const dispatch = useAppDispatch()
-  const isLoggedIn = useAppSelector(selectIsLoggedIn)
-
-  const formik = useFormik({
-    validate: (values) => {
-      const errors: FormikErrorType = {}
-      if (!values.email) {
-        errors.email = "Email is required"
-      } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
-        errors.email = "Invalid email address"
-      }
-      if (!values.password) {
-        errors.password = "Required"
-      } else if (values.password.length < 3) {
-        errors.password = "Must be 3 characters or more"
-      }
-      return errors
-    },
-    initialValues: {
-      email: "",
-      password: "",
-      rememberMe: false,
-    },
-    onSubmit: (values, formikHelpers: FormikHelpers<LoginParamsType>) => {
-      dispatch(authThunks.login(values))
-        // обработка ошибок
-        // т.к. thunk в createAsyncThunk всегда возвр.
-        // зарезолвленный промис,использ unwrap, кот. выявляет resolved
-        // или rejected промис и дает возможность попасть в catch
-        .unwrap()
-        // .then((res) => {
-        //   debugger
-        // })
-        .catch((err: BaseResponseType) => {
-          //проверка на наличие d err 'fieldError'
-          err.fieldsErrors?.forEach((fieldError) => {
-            formikHelpers.setFieldError(fieldError.field, fieldError.error)
-          })
-        })
-    },
-  })
+  const { formik, isLoggedIn } = useLogin()
 
   if (isLoggedIn) {
     return <Navigate to={"/"} />
