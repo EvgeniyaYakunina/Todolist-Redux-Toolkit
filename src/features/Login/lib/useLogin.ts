@@ -1,10 +1,10 @@
 import { FormikHelpers, useFormik } from "formik"
-import { authThunks } from "features/Login/auth-reducer"
+import { authThunks } from "features/Login/model/auth-reducer"
 import { BaseResponseType } from "common/types"
 import { useActions } from "common/hooks"
 import { useAppSelector } from "app/store"
-import { selectIsLoggedIn } from "features/Login/auth-selectors"
-import { LoginParamsType } from "features/Login/auth/auth-types"
+import { selectIsLoggedIn } from "features/Login/model/auth-selectors"
+import { LoginParamsType } from "features/Login/api/auth-types"
 
 type FormikErrorType = Partial<Omit<LoginParamsType, "captcha">>
 

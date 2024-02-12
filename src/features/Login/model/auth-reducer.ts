@@ -2,10 +2,10 @@ import { createSlice } from "@reduxjs/toolkit"
 import { appActions } from "app/app-reducer"
 import { clearTasksAndTodolists } from "common/actions/common.actions"
 import { createAppAsyncThunk, handleServerAppError, handleServerNetworkError } from "common/utils"
-import { authAPI } from "features/Login/auth/auth-api"
-import { ResultCode } from "features/TodolistsList/tasks-reducer"
+import { authAPI } from "features/Login/api/auth-api"
+import { ResultCode } from "features/TodolistsList/model/tasks/tasks-reducer"
 import { thunkTryCatch } from "common/utils/thunkTryCatch"
-import { LoginParamsType } from "features/Login/auth/auth-types"
+import { LoginParamsType } from "features/Login/api/auth-types"
 
 // const initialState: InitialStateType = {isLoggedIn: false}
 

@@ -2,9 +2,10 @@ import { appActions, RequestStatusType } from "app/app-reducer"
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { clearTasksAndTodolists } from "common/actions/common.actions"
 import { createAppAsyncThunk, handleServerAppError } from "common/utils"
-import { todolistsAPI, TodolistType } from "features/TodolistsList/Todolist/todolists-api"
+import { todolistsAPI } from "features/TodolistsList/api/todolists/todolists-api"
 import { thunkTryCatch } from "common/utils/thunkTryCatch"
-import { ResultCode } from "features/TodolistsList/tasks-reducer"
+import { ResultCode } from "features/TodolistsList/model/tasks/tasks-reducer"
+import { TodolistType } from "features/TodolistsList/api/todolists/todolists-api-types"
 
 // const initialState: Array<TodolistDomainType> = []
 

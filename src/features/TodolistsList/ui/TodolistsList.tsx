@@ -1,14 +1,19 @@
 import React, { useCallback, useEffect } from "react"
 import { useAppSelector } from "app/store"
-import { FilterValuesType, todolistsActions, todolistsThunks } from "./todolists-reducer"
-import { tasksThunks } from "./tasks-reducer"
+import {
+  FilterValuesType,
+  todolistsActions,
+  todolistsThunks,
+} from "features/TodolistsList/model/todolists/todolists-reducer"
+import { tasksThunks } from "features/TodolistsList/model/tasks/tasks-reducer"
 import { Grid, Paper } from "@mui/material"
-import { Todolist } from "./Todolist/Todolist"
+import { Todolist } from "features/TodolistsList/ui/Todolist/Todolist"
 import { Navigate } from "react-router-dom"
 import { useAppDispatch } from "common/hooks/useAppDispatch"
-import { selectIsLoggedIn, selectTasks, selectTodolists } from "features/TodolistsList/todolistList-selectors"
+import { selectIsLoggedIn, selectTodolists } from "features/TodolistsList/model/todolists/todolistList-selectors"
 import { AddItemForm } from "common/components"
 import { TaskStatuses } from "common/enum/enum"
+import { selectTasks } from "features/TodolistsList/model/tasks/tasks-selectors"
 
 type PropsType = {
   demo?: boolean

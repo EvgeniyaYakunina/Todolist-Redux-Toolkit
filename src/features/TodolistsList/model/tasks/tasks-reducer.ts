@@ -1,16 +1,12 @@
 import { appActions } from "app/app-reducer"
 import { createSlice } from "@reduxjs/toolkit"
-import { todolistsThunks } from "features/TodolistsList/todolists-reducer"
+import { todolistsThunks } from "features/TodolistsList/model/todolists/todolists-reducer"
 import { clearTasksAndTodolists } from "common/actions/common.actions"
 import { createAppAsyncThunk, handleServerAppError } from "common/utils"
-import {
-  ArgUpdateTask,
-  TaskType,
-  todolistsAPI,
-  UpdateTaskModelType,
-} from "features/TodolistsList/Todolist/todolists-api"
 import { TaskPriorities, TaskStatuses } from "common/enum/enum"
 import { thunkTryCatch } from "common/utils/thunkTryCatch"
+import { tasksAPI } from "features/TodolistsList/api/tasks/tasks-api"
+import { ArgUpdateTask, TaskType, UpdateTaskModelType } from "features/TodolistsList/api/tasks/tasks-api-types"
 
 // const initialState: TasksStateType = {}
 
@@ -84,7 +80,7 @@ const fetchTasks = createAppAsyncThunk<{ tasks: TaskType[]; todolistId: string }
   async (todolistId, thunkAPI) => {
     const { dispatch, rejectWithValue } = thunkAPI
     return thunkTryCatch(thunkAPI, async () => {
-      const res = await todolistsAPI.getTasks(todolistId)
+      const res = await tasksAPI.getTasks(todolistId)
       dispatch(appActions.setAppStatus({ status: "succeeded" }))
       return { tasks: res.data.items, todolistId }
     })
@@ -99,7 +95,7 @@ const fetchTasks = createAppAsyncThunk<{ tasks: TaskType[]; todolistId: string }
 //     try {
 //       // dispatch(setAppStatusAC("loading"))
 //       dispatch(appActions.setAppStatus({ status: "loading" }))
-//       const res = await todolistsAPI.getTasks(todolistId)
+//       const res = await tasksAPI.getTasks(todolistId)
 //       // dispatch(setAppStatusAC("succeeded"))
 //       dispatch(appActions.setAppStatus({ status: "succeeded" }))
 //       // // const tasks = res.data.items
@@ -117,7 +113,7 @@ const removeTask = createAppAsyncThunk<{ taskId: string; todolistId: string }, {
   async (arg, thunkAPI) => {
     const { dispatch, rejectWithValue } = thunkAPI
     return thunkTryCatch(thunkAPI, async () => {
-      const res = await todolistsAPI.deleteTask(arg.todolistId, arg.taskId)
+      const res = await tasksAPI.deleteTask(arg.todolistId, arg.taskId)
       if (res.data.resultCode === ResultCode.success) {
         dispatch(appActions.setAppStatus({ status: "succeeded" }))
         return { taskId: arg.taskId, todolistId: arg.todolistId }
@@ -135,7 +131,7 @@ const removeTask = createAppAsyncThunk<{ taskId: string; todolistId: string }, {
 //     const { dispatch, rejectWithValue } = thunkAPI
 //     try {
 //       dispatch(appActions.setAppStatus({ status: "loading" }))
-//       const res = await todolistsAPI.deleteTask(arg.todolistId, arg.taskId)
+//       const res = await tasksAPI.deleteTask(arg.todolistId, arg.taskId)
 //       if (res.data.resultCode === ResultCode.success) {
 //         dispatch(appActions.setAppStatus({ status: "succeeded" }))
 //         // dispatch(tasksActions.removeTask({ taskId, todolistId }))
@@ -162,7 +158,7 @@ const addTask = createAppAsyncThunk<{ task: TaskType }, { todolistId: string; ti
   async (arg, thunkAPI) => {
     const { dispatch, rejectWithValue } = thunkAPI
     return thunkTryCatch(thunkAPI, async () => {
-      const res = await todolistsAPI.createTask(arg.todolistId, arg.title)
+      const res = await tasksAPI.createTask(arg.todolistId, arg.title)
       if (res.data.resultCode === ResultCode.success) {
         dispatch(appActions.setAppStatus({ status: "succeeded" }))
         return { task: res.data.data.item }
@@ -180,7 +176,7 @@ const addTask = createAppAsyncThunk<{ task: TaskType }, { todolistId: string; ti
 //     try {
 //       dispatch(appActions.setAppStatus({ status: "loading" }))
 //
-//       const res = await todolistsAPI.createTask(arg.todolistId, arg.title)
+//       const res = await tasksAPI.createTask(arg.todolistId, arg.title)
 //       if (res.data.resultCode === ResultCode.success) {
 //         dispatch(appActions.setAppStatus({ status: "succeeded" }))
 //         return { task: res.data.data.item }
@@ -212,7 +208,7 @@ const updateTask = createAppAsyncThunk<ArgUpdateTask, ArgUpdateTask>("tasks/upda
       status: task.status,
       ...arg.domainModel,
     }
-    const res = await todolistsAPI.updateTask(arg.todolistId, arg.taskId, apiModel)
+    const res = await tasksAPI.updateTask(arg.todolistId, arg.taskId, apiModel)
     if (res.data.resultCode === ResultCode.success) {
       return arg
     } else {
@@ -239,7 +235,7 @@ const updateTask = createAppAsyncThunk<ArgUpdateTask, ArgUpdateTask>("tasks/upda
 //       status: task.status,
 //       ...arg.domainModel,
 //     }
-//     const res = await todolistsAPI.updateTask(arg.todolistId, arg.taskId, apiModel)
+//     const res = await tasksAPI.updateTask(arg.todolistId, arg.taskId, apiModel)
 //     if (res.data.resultCode === ResultCode.success) {
 //       // dispatch(tasksActions.updateTask({ taskId, model: domainModel, todolistId }))
 //       // return { taskId: arg.taskId, model: arg.domainModel, todolistId: arg.todolistId }
@@ -319,7 +315,7 @@ export const tasksThunks = { fetchTasks, removeTask, addTask, updateTask }
 //     // dispatch(setAppStatusAC("loading"))
 //     dispatch(appActions.setAppStatus({ status: "loading" }))
 //
-//     todolistsAPI.getTasks(todolistId).then((res) => {
+//     tasksAPI.getTasks(todolistId).then((res) => {
 //       const tasks = res.data.items
 //       dispatch(tasksActions.setTasks({ tasks, todolistId }))
 //       // dispatch(setAppStatusAC("succeeded"))
@@ -330,7 +326,7 @@ export const tasksThunks = { fetchTasks, removeTask, addTask, updateTask }
 // export const _removeTaskTC =
 //   (taskId: string, todolistId: string): AppThunk =>
 //   (dispatch) => {
-//     todolistsAPI.deleteTask(todolistId, taskId).then((res) => {
+//     tasksAPI.deleteTask(todolistId, taskId).then((res) => {
 //       // const action = removeTaskAC(taskId, todolistId)
 //       // dispatch(action)
 //       dispatch(tasksActions.removeTask({ taskId, todolistId }))
@@ -343,7 +339,7 @@ export const tasksThunks = { fetchTasks, removeTask, addTask, updateTask }
 //     // dispatch(setAppStatusAC("loading"))
 //     dispatch(appActions.setAppStatus({ status: "loading" }))
 //
-//     todolistsAPI
+//     tasksAPI
 //       .createTask(todolistId, title)
 //       .then((res) => {
 //         if (res.data.resultCode === 0) {
@@ -383,7 +379,7 @@ export const tasksThunks = { fetchTasks, removeTask, addTask, updateTask }
 //       ...domainModel,
 //     }
 //
-//     todolistsAPI
+//     tasksAPI
 //       .updateTask(todolistId, taskId, apiModel)
 //       .then((res) => {
 //         if (res.data.resultCode === 0) {
