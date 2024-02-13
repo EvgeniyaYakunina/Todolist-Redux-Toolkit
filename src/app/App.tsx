@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect } from "react"
-import "./App.css"
 import { TodolistsList } from "features/TodolistsList/ui/TodolistsList"
 import { useDispatch } from "react-redux"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
@@ -78,7 +77,14 @@ function App({ demo = false }: PropsType) {
         </AppBar>
         <Container fixed>
           <Routes>
-            <Route path={"/"} element={<TodolistsList demo={demo} />} />
+            <Route
+              path={"/"}
+              element={
+                <TodolistsList
+                // demo={demo}
+                />
+              }
+            />
             <Route path={"/login"} element={<Login />} />
           </Routes>
         </Container>
