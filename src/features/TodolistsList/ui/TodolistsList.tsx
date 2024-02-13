@@ -12,7 +12,6 @@ import { Navigate } from "react-router-dom"
 import { useAppDispatch } from "common/hooks/useAppDispatch"
 import { selectIsLoggedIn, selectTodolists } from "features/TodolistsList/model/todolists/todolistList-selectors"
 import { AddItemForm } from "common/components"
-import { TaskStatuses } from "common/enum/enum"
 import { selectTasks } from "features/TodolistsList/model/tasks/tasks-selectors"
 
 type PropsType = {
@@ -31,25 +30,12 @@ export const TodolistsList: React.FC<PropsType> = ({ demo = false }) => {
     if (demo || !isLoggedIn) {
       return
     }
-    // const thunk = fetchTodolistsTC()
-    // dispatch(thunk)
+    // dispatch(fetchTodolistsTC())
     dispatch(todolistsThunks.fetchTodolists())
-  }, [])
-
-  const removeTask = useCallback(function (taskId: string, todolistId: string) {
-    dispatch(tasksThunks.removeTask({ taskId, todolistId }))
   }, [])
 
   const addTask = useCallback(function (title: string, todolistId: string) {
     dispatch(tasksThunks.addTask({ title, todolistId }))
-  }, [])
-
-  const changeStatus = useCallback(function (taskId: string, status: TaskStatuses, todolistId: string) {
-    dispatch(tasksThunks.updateTask({ taskId, domainModel: { status }, todolistId }))
-  }, [])
-
-  const changeTaskTitle = useCallback(function (taskId: string, newTitle: string, todolistId: string) {
-    dispatch(tasksThunks.updateTask({ taskId, domainModel: { title: newTitle }, todolistId }))
   }, [])
 
   const changeFilter = useCallback(function (filter: FilterValuesType, todolistId: string) {
@@ -90,12 +76,9 @@ export const TodolistsList: React.FC<PropsType> = ({ demo = false }) => {
                 <Todolist
                   todolist={tl}
                   tasks={allTodolistTasks}
-                  removeTask={removeTask}
                   changeFilter={changeFilter}
                   addTask={addTask}
-                  changeTaskStatus={changeStatus}
                   removeTodolist={removeTodolist}
-                  changeTaskTitle={changeTaskTitle}
                   changeTodolistTitle={changeTodolistTitle}
                   demo={demo}
                 />
