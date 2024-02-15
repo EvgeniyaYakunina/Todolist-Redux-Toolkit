@@ -30,7 +30,7 @@ export const Todolist = memo(function ({ demo = false, todolist, tasks }: PropsT
 
   const addTaskCallback = useCallback(
     (title: string) => {
-      addTask({ title, todolistId: todolist.id })
+      return addTask({ title, todolistId: todolist.id }).unwrap()
     },
     [todolist.id],
   )

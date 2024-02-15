@@ -30,13 +30,10 @@ export const TodolistsList = ({ demo = false }: PropsType) => {
     fetchTodolists()
   }, [])
 
-  const addTodolistCallback = useCallback(
-    (title: string) => {
-      // dispatch(todolistsThunks.addTodolist(title))
-      addTodolist(title)
-    },
-    [dispatch],
-  )
+  const addTodolistCallback = useCallback((title: string) => {
+    // dispatch(todolistsThunks.addTodolist(title))
+    return addTodolist(title).unwrap()
+  }, [])
 
   if (!isLoggedIn) {
     return <Navigate to={"/login"} />
