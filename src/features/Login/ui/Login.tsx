@@ -1,12 +1,6 @@
 import React from "react"
-import { FormikHelpers, useFormik } from "formik"
-import { useAppSelector } from "app/store"
 import { Navigate } from "react-router-dom"
-import { useAppDispatch } from "common/hooks/useAppDispatch"
 import { Button, Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel, Grid, TextField } from "@mui/material"
-import { selectIsLoggedIn } from "features/Login/model/auth-selectors"
-import { authThunks } from "features/Login/model/auth-reducer"
-import { BaseResponseType } from "common/types"
 import { useLogin } from "features/Login/lib/useLogin"
 
 export const Login = () => {
