@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit"
+import { createSlice, isAnyOf } from "@reduxjs/toolkit"
 import { appActions } from "app/app-reducer"
 import { clearTasksAndTodolists } from "common/actions/common.actions"
 import { createAppAsyncThunk, handleServerAppError, handleServerNetworkError } from "common/utils"
@@ -6,6 +6,7 @@ import { authAPI } from "features/Login/api/auth-api"
 import { ResultCode } from "features/TodolistsList/model/tasks/tasks-reducer"
 import { thunkTryCatch } from "common/utils/thunkTryCatch"
 import { LoginParamsType } from "features/Login/api/auth-types"
+import { isAbsoluteUrl } from "@reduxjs/toolkit/dist/query/utils"
 
 // const initialState: InitialStateType = {isLoggedIn: false}
 
@@ -18,13 +19,22 @@ const slice = createSlice({
     // },
   },
   extraReducers: (builder) => {
-    builder
-      .addCase(login.fulfilled, (state, action) => {
+    // builder
+    // .addCase(login.fulfilled, (state, action) => {
+    //   state.isLoggedIn = action.payload.isLoggedIn
+    // })
+    // .addCase(logout.fulfilled, (state, action) => {
+    //   state.isLoggedIn = action.payload.isLoggedI n
+    // })
+    // .addCase(initializeApp.fulfilled, (state, action) => {
+    //   state.isLoggedIn = action.payload.isLoggedIn
+    // })
+    builder.addMatcher(
+      isAnyOf(authThunks.login.fulfilled, authThunks.logout.fulfilled, authThunks.initializeApp.fulfilled),
+      (state, action) => {
         state.isLoggedIn = action.payload.isLoggedIn
-      })
-      .addCase(logout.fulfilled, (state, action) => {
-        state.isLoggedIn = action.payload.isLoggedIn
-      })
+      },
+    )
   },
 })
 
